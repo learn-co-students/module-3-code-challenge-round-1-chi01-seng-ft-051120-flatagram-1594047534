@@ -11,34 +11,43 @@ function displayImage(){
 }
 
 function displayOneImg(imgData){
-  console.log(imgData)
+  
+  const comments = imgData.comments.map(comment => {
+    return comment.content
+  })
+  imgData.comments.forEach(comment => {
+    `<li ${comment}>`
+  })
+  
+
   imgInfo = `
   <div class="image-card">
-        <h2 class="title">${imgData.title}</h2>
-        <img src="${imgData.image}" class="image" />
-        <div class="likes-section">
-          <span class="likes">${imgData.likes} likes</span>
-          <button data-id=${imgData.id} class="like-button">♥</button>
-        </div>
-        <ul class="comments">
-          <li>${imgData.comments[0].content}</li>
-          <li>${imgData.comments[1].content}</li>
-          <li>${imgData.comments[2].content}</li>
-          <li>${imgData.comments[3].content}</li>
-        </ul>
-        <form class="comment-form">
-          <input
-            class="comment-input"
-            type="text"
-            name="comment"
-            placeholder="Add a comment..."
-          />
-          <button class="comment-button" type="submit">Post</button>
-        </form>
-        `
+  <h2 class="title">${imgData.title}</h2>
+  <img src="${imgData.image}" class="image" />
+  <div class="likes-section">
+  <span class="likes">${imgData.likes} likes</span>
+  <button data-id=${imgData.id} class="like-button">♥</button>
+  </div>
+  <ul class="comments">
+  <li>${comments[0]}</li>
+  <li>${comments[1]}</li>
+  <li>${comments[2]}</li>
+  </ul>
+  <form class="comment-form">
+  <input
+  class="comment-input"
+  type="text"
+  name="comment"
+  placeholder="Add a comment..."
+  />
+  <button class="comment-button" type="submit">Post</button>
+  </form>
+  `
   imgContainer.innerHTML += imgInfo
+
   
   const commentForm = document.querySelector(".comment-form");
+  const allComments = document.querySelector(".comments")
   imgContainer.addEventListener("click", likeImgHandler)
   commentForm.addEventListener("submit", commentHandler)
 }
@@ -83,7 +92,7 @@ function likeImg(){
 //////// ADD COMMENT FUNCTIONS /////////
 function commentHandler(){
   event.preventDefault()
-  const commentText = event.target.name
+  const commentText = event.target.comment.value
   postNewComment(commentText)
   event.target.reset()
 }
@@ -96,7 +105,7 @@ function postNewComment(commentText){
 }
 
 function renderNewComment(commentData){
-  
+  ///// couldnt get this far due to improper setup. seperate renderComments function would be ideal...
 }
 
 function postCommentObj(commentText){
