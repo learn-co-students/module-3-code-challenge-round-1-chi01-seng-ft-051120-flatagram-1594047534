@@ -1,11 +1,7 @@
 ///////////  VARIABLES /////////////
 document.addEventListener('DOMContentLoaded', function() {
-  const commentForm = document.getElementById("comment-form")
-  const commentContainer = document.getElementById("comments-list")
-  const commentInput = document.getElementById("add-comments-input")
-  let allComments = []
   const commentUrl="http://localhost:3000/comments"
-  const imageUrl="http://localhost:3000/images"
+  const imageUrl="http://localhost:3000/images/1"
 
 form.addEventListener("submit", submitNewComment);
 collection.addEventListener("click", (event) => {
@@ -15,12 +11,19 @@ collection.addEventListener("click", (event) => {
 })
 
 
-function fetchComments() {
-  fetch(CommentUrl)
+function fetchImages()
+  fetch(ImageUrl)
   .then(resp => resp.json())
-  .then(comments => comments.forEach(comment => renderOneComment(comment)))
-  .catch(err => console.log(err))
+  .then(images => images.forEach(image => renderOneImage(image)))
+
 }
+
+// function fetchComments() {
+//   fetch(CommentUrl)
+//   .then(resp => resp.json())
+//   .then(comments => comments.forEach(comment => renderOneComment(comment)))
+//   .catch(err => console.log(err))
+// }
 
 function renderOneComment(comment) {
   const commentCard = `<div class="card" data-comment-id= "${comment.id}">
@@ -37,15 +40,15 @@ function submitNewComment(event) {
   }
 
     
-    ///postCom
-    const formData = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify(formData)
-    }
+    ///post
+  const formData = {
+    method: "POST",
+    headers: {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+    },
+    body: JSON.stringify(formData)
+  }
 
     fetch(commentUrl, formData)
     .then(resp => resp.json())
@@ -62,7 +65,7 @@ function submitNewComment(event) {
       likes: updatedLike
     }
 
-
-
   fetchComments()
+  fetchImages()
+
 });
