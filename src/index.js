@@ -24,10 +24,13 @@ function renderJSON(json) {
     }
     title.nextElementSibling.nextElementSibling.innerHTML = `<span id="likes-${json.id}"
     class="likes">${json.likes} ${likesMessage}</span>
-    <button data-photo-id="${json.id}" data-likes-count="${json.likes}" class="like-button">♥</button>`
+    <button data-photo-id="${json.id}" data-likes-count="${json.likes}" class="like-button">♥</button>
+    <button data-photo-id="${json.id}" data-likes-count="${json.likes}" class="downvote-button">BOO!</button>`
     renderComments(json);
     renderLikeEvent();
-    renderCommentEvent()
+    renderDownvoteEvent();
+    renderCommentEvent();
+    renderDeleteEvent()
 }
 
 function renderComments(json) {
@@ -39,7 +42,7 @@ function renderComments(json) {
 }
 
 function renderComment(commentList, comment) {
-    commentList.innerHTML += `<li id="comment-${comment.id}">${comment.content}</li>`
+    commentList.innerHTML += `<hr><li id="comment-${comment.id}">${comment.content}<button style="float:right" class="delete" data-comment-id="${comment.id}">Delete</button><br><br></li>`
 }
 
 function handleEvents(event) {
@@ -52,6 +55,22 @@ function addLike(event) {
     const url = "http://localhost:3000/images/1"
     const likesNumber = parseInt(event.target.dataset.likesCount) 
     const payload = {likes: likesNumber + 1}
+    const reqObj = {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+    }
+    fetch(url, reqObj)
+    .then(resp => resp.json())
+    .then(json => fetchImage())
+}
+
+function addDownvote(event) {
+    const url = "http://localhost:3000/images/1"
+    const likesNumber = parseInt(event.target.dataset.likesCount) 
+    const payload = {likes: likesNumber - 1}
     const reqObj = {
         method: "PATCH",
         headers: {
@@ -78,6 +97,13 @@ function renderCommentEvent() {
     }
 }
 
+function renderDownvoteEvent() {
+    const downvoteButtons = document.getElementsByClassName("downvote-button")
+    for (let i=0; i<downvoteButtons.length; i++) {
+        downvoteButtons[i].addEventListener("click", addDownvote)
+    }
+}
+
 function addComment() {
     event.preventDefault();
     const comment = event.target.comment.value 
@@ -86,7 +112,7 @@ function addComment() {
         content: comment
     }
     event.target.reset();
-    
+
     const reqObj = {
         method: "POST",
         headers: {
@@ -97,4 +123,20 @@ function addComment() {
     fetch("http://localhost:3000/comments", reqObj)
     .then(resp => resp.json())
     .then(json => fetchImage())
+}
+
+function renderDeleteEvent() {
+    const deleteButtons = document.getElementsByClassName("delete")
+    for (let i=0; i<deleteButtons.length; i++) {
+        deleteButtons[i].addEventListener("click", deleteComment)
     }
+}
+
+function deleteComment(event) {
+    const comment = event.target.dataset.commentId 
+    const url = "http://localhost:3000/comments" + "/" + comment 
+    const reqObj = {method: "DELETE"}
+    fetch(url, reqObj)
+    .then(resp => resp.json())
+    .then(json => fetchImage())
+}
