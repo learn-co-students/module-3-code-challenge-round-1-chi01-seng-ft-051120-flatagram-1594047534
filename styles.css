@@ -62,6 +62,14 @@ body {
   cursor: pointer;
 }
 
+.downvote-button {
+  font-size: 1.5rem;
+  border: none;
+  background: none;
+  transition: color 300ms;
+  cursor: pointer;
+}
+
 .like-button:hover {
   color: rgb(241, 71, 19);
 }
@@ -70,7 +78,7 @@ body {
   color: rgb(253, 159, 124);
 }
 
-.like-button:focus {
+.like-button:focus, .downvote-button:focus {
   outline: none;
 }
 
