@@ -1,3 +1,6 @@
+//
+//
+//
 //////// VARIABLES ////////
 const imgContainer = document.querySelector(".image-container");
 
@@ -13,12 +16,8 @@ function displayImage(){
 function displayOneImg(imgData){
   
   const comments = imgData.comments.map(comment => {
-    return comment.content
-  })
-  imgData.comments.forEach(comment => {
-    `<li ${comment}>`
-  })
-  
+    return `<li>${comment.content}</li>`
+  }).join('')
 
   imgInfo = `
   <div class="image-card">
@@ -29,9 +28,7 @@ function displayOneImg(imgData){
   <button data-id=${imgData.id} class="like-button">♥</button>
   </div>
   <ul class="comments">
-  <li>${comments[0]}</li>
-  <li>${comments[1]}</li>
-  <li>${comments[2]}</li>
+  ${comments}
   </ul>
   <form class="comment-form">
   <input
@@ -98,6 +95,8 @@ function commentHandler(){
 }
 
 function postNewComment(commentText){
+  
+
   fetch("http://localhost:3000/comments", postCommentObj(commentText))
   .then(resp => resp.json())
   .then(commentData => renderNewComment(commentData))
@@ -105,7 +104,9 @@ function postNewComment(commentText){
 }
 
 function renderNewComment(commentData){
-  ///// couldnt get this far due to improper setup. seperate renderComments function would be ideal...
+  console.log(commentData)
+  const ul = document.querySelector('ul')
+  ul.innerHTML += `<li>${commentData.content}</li>`
 }
 
 function postCommentObj(commentText){
@@ -116,7 +117,8 @@ function postCommentObj(commentText){
       "Accept": "application/json"
     },
     body: JSON.stringify({
-      name: commentText
+      imageId: 1,
+      content: commentText
     })
   }  
 }
@@ -127,3 +129,5 @@ function postCommentObj(commentText){
 
 //////// INVOKED FUNCTIONS ////////
 displayImage()
+
+
