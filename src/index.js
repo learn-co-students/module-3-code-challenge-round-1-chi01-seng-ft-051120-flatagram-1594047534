@@ -1,71 +1,96 @@
-///////////  VARIABLES /////////////
-document.addEventListener('DOMContentLoaded', function() {
-  const commentUrl="http://localhost:3000/comments"
-  const imageUrl="http://localhost:3000/images/1"
+// write your code here
+const imgURL = "http://localhost:3000/images/1"
+const commentsURL = "http://localhost:3000/comments"
+const title = document.getElementsByClassName("title")[0]
+const img = document.getElementsByClassName("image")[0]
+const commentSection = document.getElementsByClassName("comments")[0]
+const eventRL = [renderLikeEvent, renderCommentEvent]
+const likeBtn = document.getElementsByClassName("like-button")
 
-form.addEventListener("submit", submitNewComment);
-collection.addEventListener("click", (event) => {
-  if (event.target.className==="like-btn") {
-    increaseLike(event)
-  } //else if delete, deleteLike(event)
-})
-
-
-function fetchImages()
-  fetch(ImageUrl)
-  .then(resp => resp.json())
-  .then(images => images.forEach(image => renderOneImage(image)))
-
-}
-
-// function fetchComments() {
-//   fetch(CommentUrl)
-//   .then(resp => resp.json())
-//   .then(comments => comments.forEach(comment => renderOneComment(comment)))
-//   .catch(err => console.log(err))
-// }
-
-function renderOneComment(comment) {
-  const commentCard = `<div class="card" data-comment-id= "${comment.id}">
-  <h2>${comment.content}</h2>
-  <p>${comment.likes} Like(s) </p>
-  </div>`
-  collection.innerHTML += commentCard
-}
-
-function submitNewComment(event) {
-  event.preventDefault()
-  const formData = {
-  content: event.target.content.value
-  }
-
-    
-    ///post
-  const formData = {
-    method: "POST",
-    headers: {
-    "Content-Type": "application/json",
-    "Accept": "application/json"
-    },
-    body: JSON.stringify(formData)
-  }
-
-    fetch(commentUrl, formData)
+function fetchImage() {
+    fetch(imgURL)
     .then(resp => resp.json())
-    .then(toy => renderOneComment(comment))
-  }
+    .then(image => renderImage(image))
+    .catch(err => console.log(err))
+}
+
+function renderImage(image) {
+    title.innerHTML = image.title 
+    img.src = `${image.image}`
+    img.nextElementSibling.innerHTML = `<span id="likes-${image.id}"
+    class="likes">${image.likes} like(s) </span>
+    <button data-photo-id="${image.id}" data-likes-count="${image.likes}" class="like-button">♥</button>`
+    
+    renderComments(image);
+    function renderComments(image) {
+        commentSection.innerHTML=" "
+        image.comments.forEach(comment => {
+            commentSection.innerHTML += `<li>${comment.content} <button>delete</button><li>`
+            })
+        }
+        eventRL.forEach(render => {
+            render();
+    })
+}
 
 
-  function increaseLike(event) {
-    const likeElement = event.target.previousElementSibling
-    const likeStr = likeElement.innerText.split(" ")[0]
-    const updatedLike = parseInt(likeStr) + 1
 
-    const formData = {
-      likes: updatedLike
+function addLike(event) {
+    const likes = parseInt(event.target.dataset.likesCount) 
+    patchLike()
+    function patchLike() {
+        const reqObj = {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({
+              likes: likes 
+            })
+        }
+            fetch(imgURL,reqObj)
+            .then(resp => resp.json())
+            .then(json => fetchImage())
+    }
+}
+
+function addComment() {
+    event.preventDefault();
+    const comment = event.target.comment.value 
+    event.target.reset();
+
+    const reqObj = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            imageId: 1,
+            content: comment})
     }
 
-  fetchComments()
-  fetchImages()
+    fetch(commentsURL, reqObj)
+    .then(resp => resp.json())
+    .then(json => fetchImage())
+}
 
-});
+
+function renderLikeEvent() {
+    const likeBtn = document.getElementsByClassName("like-button")
+    for (let i=0; i<likeBtn.length; i++) {
+        likeBtn[i].addEventListener("click", addLike)
+    }
+}
+
+function renderCommentEvent() {
+    const commentForm = document.getElementsByClassName("comment-form")
+    for (let i=0; i<commentForm.length; i++) {
+        commentForm[i].addEventListener("submit", addComment)
+    }
+}
+
+
+
+//invoke     
+fetchImage();
